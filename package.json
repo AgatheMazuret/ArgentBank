@@ -1,0 +1,7 @@
+{
+  "name": "project-13-bank-api-master",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -F \"*\" dev"
+  }
+}
