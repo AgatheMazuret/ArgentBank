@@ -139,6 +139,9 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.7.0
         version: 2.7.0(react-redux@9.2.0(@types/react@19.1.2)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
+      '@types/redux':
+        specifier: ^3.6.0
+        version: 3.6.0
       axios:
         specifier: ^1.8.4
         version: 1.8.4
@@ -154,6 +157,12 @@ importers:
       react-router-dom:
         specifier: ^7.5.1
         version: 7.5.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      redux:
+        specifier: ^5.0.1
+        version: 5.0.1
+      redux-thunk:
+        specifier: ^3.1.0
+        version: 3.1.0(redux@5.0.1)
     devDependencies:
       '@eslint/js':
         specifier: ^9.22.0
@@ -167,6 +176,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.4
         version: 19.1.2(@types/react@19.1.2)
+      '@types/redux-thunk':
+        specifier: ^2.1.0
+        version: 2.1.0(redux@5.0.1)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.3.4(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2))
@@ -837,6 +849,14 @@ packages:
 
   '@types/react@19.1.2':
     resolution: {integrity: sha512-oxLPMytKchWGbnQM9O7D67uPa9paTNxO7jVoNMXgkkErULBPhPARCfkKL9ytcIJJRGjbsVwW4ugJzyFFvm/Tiw==}
+
+  '@types/redux-thunk@2.1.0':
+    resolution: {integrity: sha512-8M+kcrnZQYO3A40d8a1lieBFur/ab8EXHqa2dGMQqsmBaVCbNp3gd8ed/HuSjLoLA63ov/trXaXWlkiKVF4VUw==}
+    deprecated: This is a stub types definition for Redux Thunk (https://github.com/gaearon/redux-thunk). Redux Thunk provides its own type definitions, so you don't need @types/redux-thunk installed!
+
+  '@types/redux@3.6.0':
+    resolution: {integrity: sha512-ic+60DXHW5seNyqFvfr7Sk5cnXs+HsF9tIeIaxjOuSP5kzgDXC+AzKTYmjAfuLx4Sccm/0vjwBQj3OOkUkwOqg==}
+    deprecated: This is a stub types definition for Redux (https://github.com/reactjs/redux). Redux provides its own type definitions, so you don't need @types/redux installed!
 
   '@types/use-sync-external-store@0.0.6':
     resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
@@ -3186,6 +3206,16 @@ snapshots:
   '@types/react@19.1.2':
     dependencies:
       csstype: 3.1.3
+
+  '@types/redux-thunk@2.1.0(redux@5.0.1)':
+    dependencies:
+      redux-thunk: 3.1.0(redux@5.0.1)
+    transitivePeerDependencies:
+      - redux
+
+  '@types/redux@3.6.0':
+    dependencies:
+      redux: 5.0.1
 
   '@types/use-sync-external-store@0.0.6': {}
 
