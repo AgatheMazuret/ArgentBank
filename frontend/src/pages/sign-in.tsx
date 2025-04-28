@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../style.css";
 import { useDispatch } from "react-redux";
-import { login } from "../redux/auth-actions"; // Importer l'action login
+import { login } from "../redux/auth-actions";
 
 const SignInPage = () => {
   const [email, setEmail] = useState(""); // Remplacer username par email
