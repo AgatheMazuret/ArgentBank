@@ -4,15 +4,20 @@ import Main from "./pages/main";
 import SignInPage from "./pages/sign-in";
 import UserHomePage from "./pages/user";
 import { Provider } from "react-redux";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App = () => {
   return (
     <Provider store={store}>
-      <div className="App">
-        <Main />
-        <SignInPage />
-        <UserHomePage />
-      </div>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/sign-in" element={<SignInPage />} />
+            <Route path="/user" element={<UserHomePage />} />
+          </Routes>
+        </div>
+      </Router>
     </Provider>
   );
 };

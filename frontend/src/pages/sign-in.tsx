@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../../style.css";
 
 // Composant pour la page de connexion
@@ -23,19 +24,19 @@ const SignInPage = () => {
   return (
     <div>
       <nav className="main-nav">
-        <a className="main-nav-logo" href="./index.html">
+        <Link className="main-nav-logo" to="/">
           <img
             className="main-nav-logo-image"
             src="./src/assets/argentBankLogo.png"
             alt="Argent Bank Logo"
           />
           <h1 className="sr-only">Argent Bank</h1>
-        </a>
+        </Link>
         <div>
-          <a className="main-nav-item" href="./sign-in.html">
+          <Link className="main-nav-item" to="/sign-in">
             <i className="fa fa-user-circle"></i>
             Sign In
-          </a>
+          </Link>
         </div>
       </nav>
 
@@ -72,9 +73,9 @@ const SignInPage = () => {
               <label htmlFor="remember-me">Remember me</label>
             </div>
             {/* PLACEHOLDER DUE TO STATIC SITE */}
-            <a href="./user.html" className="sign-in-button">
+            <Link to="/user" className="sign-in-button">
               Sign In
-            </a>
+            </Link>
             {/* The button below should be used in a real app */}
             {/* <button className="sign-in-button">Sign In</button> */}
           </form>
