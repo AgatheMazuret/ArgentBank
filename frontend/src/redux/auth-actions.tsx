@@ -1,17 +1,18 @@
 // src/redux/actions/auth-actions.ts
-import { loginSuccess, logout } from "../auth-reducer";
+import { loginSuccess } from "../auth-reducer";
 import { Dispatch } from "redux";
 
 // Action de connexion
 export const login =
-  (email: string, password: string) => async (dispatch: Dispatch) => {
+  (email: string, password: string, rememberMe: boolean) =>
+  async (dispatch: Dispatch) => {
     try {
-      const response = await fetch("", {
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, rememberMe }), // Passer les trois paramètres
       });
       const data = await response.json();
 
@@ -26,6 +27,8 @@ export const login =
   };
 
 // Action de déconnexion
-export const logoutUser = () => (dispatch: Dispatch) => {
-  dispatch(logout());
+export const logoutUser = () => {
+  return {
+    type: "LOGOUT_USER",
+  };
 };

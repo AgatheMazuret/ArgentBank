@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer, { AuthState } from "../auth-reducer";
+import authReducer from "../auth-reducer";
 
-// Typage de l'état global du store
-export interface RootState {
-  auth: AuthState;
-}
-
+export type RootState = {
+  user: {
+    loggedIn: boolean;
+  };
+};
 const store = configureStore({
   reducer: {
     auth: authReducer,

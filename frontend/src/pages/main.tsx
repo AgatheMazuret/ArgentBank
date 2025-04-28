@@ -1,8 +1,18 @@
 import "../../style.css";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch, TypedUseSelectorHook } from "react-redux"; // Importer les hooks Redux
+import { RootState } from "../redux/store"; // Importer le type de l'état global
+import { logoutUser } from "../redux/auth-actions"; // Action de déconnexion
 
 // Composant principal de la page
 const Main = () => {
+  const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
+  const isLoggedIn = useTypedSelector((state) => state.user.loggedIn);
+  const dispatch = useDispatch();
+  const handleSignOut = () => {
+    dispatch(logoutUser());
+  };
+
   return (
     <div>
       <header className="main-nav">
@@ -17,10 +27,17 @@ const Main = () => {
           <h1 className="sr-only">Argent Bank</h1>
         </Link>
         <div>
-          <Link className="main-nav-item" to="/sign-in">
-            <i className="fa fa-user-circle"></i>
-            Sign In
-          </Link>
+          {isLoggedIn ? (
+            <Link className="main-nav-item" to="/" onClick={handleSignOut}>
+              <i className="fa fa-user-circle"></i>
+              Sign Out
+            </Link>
+          ) : (
+            <Link className="main-nav-item" to="/sign-in">
+              <i className="fa fa-user-circle"></i>
+              Sign In
+            </Link>
+          )}
         </div>
       </header>
 

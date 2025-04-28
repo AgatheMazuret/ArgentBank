@@ -1,24 +1,33 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../style.css";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/auth-actions"; // Importer l'action login
 
-// Composant pour la page de connexion
 const SignInPage = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState(""); // Remplacer username par email
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const dispatch = useDispatch(); // Créer l'instance de dispatch
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implémentation de la logique de connexion ici
+
+    // Logique de connexion
     console.log(
-      "Username:",
-      username,
+      "Email:",
+      email,
       "Password:",
       password,
       "Remember Me:",
       rememberMe
     );
+
+    // Dispatch de l'action login avec email, password et rememberMe
+    dispatch(login(email, password, rememberMe));
+
+    // Vous pourriez ici ajouter un appel à une API pour vérifier le mot de passe
+    // et connecter l'utilisateur si la vérification réussit.
   };
 
   return (
@@ -46,12 +55,12 @@ const SignInPage = () => {
           <h1>Sign In</h1>
           <form onSubmit={handleSubmit}>
             <div className="input-wrapper">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
               <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="input-wrapper">
@@ -72,12 +81,9 @@ const SignInPage = () => {
               />
               <label htmlFor="remember-me">Remember me</label>
             </div>
-            {/* PLACEHOLDER DUE TO STATIC SITE */}
             <Link to="/user" className="sign-in-button">
               Sign In
             </Link>
-            {/* The button below should be used in a real app */}
-            {/* <button className="sign-in-button">Sign In</button> */}
           </form>
         </section>
       </main>

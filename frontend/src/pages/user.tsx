@@ -1,8 +1,21 @@
 import "../index.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux"; // Importer useDispatch et useSelector
+import { logoutUser } from "../redux/auth-actions";
 
-// Composant pour la page principale (accueil de l'utilisateur)
-const UserHomePage = () => {
+export const UserHomePage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Utilisation de useNavigate pour la redirection
+  const { username, loggedIn } = useSelector(
+    (state: { user: { username: string; loggedIn: boolean } }) => state.user
+  );
+
+  // Fonction de déconnexion
+  const handlelogoutUser = () => {
+    dispatch(logoutUser());
+    navigate("/");
+  };
+
   return (
     <div>
       <nav className="main-nav">
@@ -15,15 +28,24 @@ const UserHomePage = () => {
           <h1 className="sr-only">Argent Bank</h1>
         </Link>
         <div>
-          <a className="main-nav-item" href="./user.html">
-            <i className="fa fa-user-circle"></i>
-            Tony
-          </a>
-          {/* Sign Out Button à côté de Tony */}
-          <Link to="/" className="sign-out-button">
-            <i className="fa fa-sign-out"></i>
-            Sign Out
-          </Link>
+          {loggedIn ? (
+            <a className="main-nav-item" href="./user.html">
+              <i className="fa fa-user-circle"></i>
+              {username || "Guest"}
+            </a>
+          ) : (
+            <Link className="main-nav-item" to="/sign-in">
+              <i className="fa fa-user-circle"></i>
+              Sign In
+            </Link>
+          )}
+
+          {loggedIn && (
+            <Link to="/" className="sign-out-button" onClick={handlelogoutUser}>
+              <i className="fa fa-sign-out"></i>
+              Sign Out
+            </Link>
+          )}
         </div>
       </nav>
       <main className="main bg-dark">
@@ -31,7 +53,7 @@ const UserHomePage = () => {
           <h1>
             Welcome back
             <br />
-            Tony Jarvis!
+            {username || "User"}
           </h1>
           <button className="edit-button">Edit Name</button>
         </div>
@@ -73,5 +95,3 @@ const UserHomePage = () => {
     </div>
   );
 };
-
-export default UserHomePage;
