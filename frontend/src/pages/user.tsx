@@ -1,5 +1,6 @@
 import "../index.css";
 import { Link } from "react-router-dom";
+
 // Composant pour la page principale (accueil de l'utilisateur)
 const UserHomePage = () => {
   return (
@@ -18,8 +19,10 @@ const UserHomePage = () => {
             <i className="fa fa-user-circle"></i>
             Tony
           </a>
-          <Link to="/user" className="sign-in-button">
-            Sign In
+          {/* Sign Out Button à côté de Tony */}
+          <Link to="/" className="sign-out-button">
+            <i className="fa fa-sign-out"></i>
+            Sign Out
           </Link>
         </div>
       </nav>
