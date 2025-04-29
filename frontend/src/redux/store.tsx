@@ -4,6 +4,7 @@ import authReducer from "../auth-reducer";
 export type RootState = {
   user: {
     loggedIn: boolean;
+    name: string; // Add the 'name' property
   };
 };
 const store = configureStore({

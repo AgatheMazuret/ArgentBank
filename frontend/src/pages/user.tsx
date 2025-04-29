@@ -4,18 +4,6 @@ import { useDispatch, useSelector } from "react-redux"; // Importer useDispatch 
 import { logoutUser } from "../redux/auth-actions";
 
 export const UserHomePage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate(); // Utilisation de useNavigate pour la redirection
-  const { username, loggedIn } = useSelector(
-    (state: { user: { username: string; loggedIn: boolean } }) => state.user
-  );
-
-  // Fonction de déconnexion
-  const handlelogoutUser = () => {
-    dispatch(logoutUser());
-    navigate("/");
-  };
-
   return (
     <div>
       <nav className="main-nav">
@@ -28,24 +16,14 @@ export const UserHomePage = () => {
           <h1 className="sr-only">Argent Bank</h1>
         </Link>
         <div>
-          {loggedIn ? (
-            <a className="main-nav-item" href="./user.html">
-              <i className="fa fa-user-circle"></i>
-              {username || "Guest"}
-            </a>
-          ) : (
-            <Link className="main-nav-item" to="/sign-in">
-              <i className="fa fa-user-circle"></i>
-              Sign In
-            </Link>
-          )}
-
-          {loggedIn && (
-            <Link to="/" className="sign-out-button" onClick={handlelogoutUser}>
-              <i className="fa fa-sign-out"></i>
-              Sign Out
-            </Link>
-          )}
+          <a className="main-nav-item" href="./user.html">
+            <i className="fa fa-user-circle"></i>
+            Tony
+          </a>
+          <Link to="/" className="sign-out-button" onClick={logoutUser}>
+            <i className="fa fa-sign-out"></i>
+            Sign out
+          </Link>
         </div>
       </nav>
       <main className="main bg-dark">
@@ -53,7 +31,7 @@ export const UserHomePage = () => {
           <h1>
             Welcome back
             <br />
-            {username || "User"}
+            Tony Jarvis!
           </h1>
           <button className="edit-button">Edit Name</button>
         </div>
@@ -95,3 +73,5 @@ export const UserHomePage = () => {
     </div>
   );
 };
+
+export default UserHomePage;

@@ -7,7 +7,7 @@ import { logoutUser } from "../redux/auth-actions"; // Action de déconnexion
 // Composant principal de la page
 const Main = () => {
   const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
-  const isLoggedIn = useTypedSelector((state) => state.user.loggedIn);
+  const isLoggedIn = useTypedSelector((state) => state.auth.loggedIn);
   const dispatch = useDispatch();
   const handleSignOut = () => {
     dispatch(logoutUser());
