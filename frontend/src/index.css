@@ -127,6 +127,7 @@ body {
 .features {
   display: flex;
   flex-direction: column;
+  height: 45vh;
 }
 
 @media (min-width: 920px) {
