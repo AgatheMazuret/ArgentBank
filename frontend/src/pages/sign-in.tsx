@@ -15,13 +15,20 @@ const SignInPage = () => {
     (state: RootState) => state.auth.errorMessage
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(login(email, password, rememberMe));
 
-    // Si l'authentification est réussie, nous redirigeons l'utilisateur
-    if (!errorMessage) {
-      navigate("/user");
+    try {
+      // Envoie les infos de connexion
+      await dispatch(login(email, password, rememberMe));
+
+      // Vérifie si le token a été stocké
+      const token = localStorage.getItem("token");
+      if (token) {
+        navigate("/user");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
     }
   };
 
