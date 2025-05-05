@@ -1,9 +1,26 @@
 import "../index.css";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux"; // Importer useDispatch et useSelector
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { logoutUser } from "../redux/auth-actions";
 
 export const UserHomePage = () => {
+  // État pour gérer le nom de l'utilisateur
+  const [isEditing, setIsEditing] = useState(false);
+  const [newName, setNewName] = useState("Tony Jarvis");
+
+  // Fonction pour gérer le changement de nom
+  const handleNameChange = (event) => {
+    setNewName(event.target.value);
+  };
+
+  // Fonction pour valider et envoyer la modification
+  const handleSaveName = () => {
+    // Logique de sauvegarde du nouveau nom (par exemple, appeler une API ou mettre à jour l'état global)
+    console.log("New name saved:", newName);
+    setIsEditing(false); // Ferme le formulaire d'édition
+  };
+
   return (
     <div>
       <nav className="main-nav">
@@ -18,7 +35,7 @@ export const UserHomePage = () => {
         <div>
           <a className="main-nav-item" href="./user.html">
             <i className="fa fa-user-circle"></i>
-            Tony
+            {newName.split(" ")[0]} {/* Affiche seulement le prénom */}
           </a>
           <Link to="/" className="sign-out-button" onClick={logoutUser}>
             <i className="fa fa-sign-out"></i>
@@ -31,11 +48,37 @@ export const UserHomePage = () => {
           <h1>
             Welcome back
             <br />
-            Tony Jarvis!
+            {newName}!
           </h1>
-          <button className="edit-button">Edit Name</button>
+
+          {/* Afficher le formulaire d'édition si isEditing est vrai */}
+          {isEditing ? (
+            <div className="edit-name-form">
+              <input
+                type="text"
+                value={newName}
+                onChange={handleNameChange}
+                placeholder="Enter new name"
+              />
+              <button className="save-name-button" onClick={handleSaveName}>
+                Save
+              </button>
+              <button
+                className="cancel-name-button"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button className="edit-button" onClick={() => setIsEditing(true)}>
+              Edit Name
+            </button>
+          )}
         </div>
+
         <h2 className="sr-only">Accounts</h2>
+        {/* Section comptes */}
         <section className="account">
           <div className="account-content-wrapper">
             <h3 className="account-title">Argent Bank Checking (x8349)</h3>
@@ -46,6 +89,7 @@ export const UserHomePage = () => {
             <button className="transaction-button">View transactions</button>
           </div>
         </section>
+        {/* Autres sections de comptes */}
         <section className="account">
           <div className="account-content-wrapper">
             <h3 className="account-title">Argent Bank Savings (x6712)</h3>
