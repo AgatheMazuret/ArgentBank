@@ -18,15 +18,24 @@ const SignInPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Form submitted");
 
     try {
       // Envoie les infos de connexion
+      console.log("Dispatching login action...");
       await dispatch(login(email, password, rememberMe));
 
       // Vérifie si le token a été stocké
-      const token = localStorage.getItem("token");
+      const token = rememberMe
+        ? localStorage.getItem("token") // Récupérer depuis localStorage si "Remember me" est coché
+        : sessionStorage.getItem("token"); // Récupérer depuis sessionStorage si "Remember me" est décoché
+
+      console.log("Token trouvé :", token); // Affiche le token trouvé pour le débogage
       if (token) {
+        console.log("Token trouvé, navigation vers /user");
         navigate("/user");
+      } else {
+        console.log("Aucun token trouvé.");
       }
     } catch (error) {
       console.error("Login failed:", error);

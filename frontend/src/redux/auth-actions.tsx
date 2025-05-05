@@ -22,6 +22,7 @@ export const login =
       });
 
       const data = await response.json();
+      console.log("Réponse de l'API:", data); // Ajoute ce log pour voir ce que contient la réponse
 
       if (response.ok && data.body.token) {
         const token = data.body.token;
@@ -29,8 +30,10 @@ export const login =
         // ✅ Stockage du token
         if (rememberMe) {
           localStorage.setItem("token", token);
+          console.log("Token stocké dans localStorage");
         } else {
           sessionStorage.setItem("token", token);
+          console.log("Token stocké dans sessionStorage");
         }
 
         const user = data.body.user;
