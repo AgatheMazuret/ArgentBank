@@ -4,17 +4,22 @@ import { useState, useEffect, useRef } from "react";
 import { logoutUser } from "../redux/auth-actions";
 
 export const UserHomePage = () => {
+  // Initialisation de l'état pour savoir si l'utilisateur est en train de modifier son nom
   const [isEditing, setIsEditing] = useState(false);
+  // Initialisation de l'état pour le nouveau nom à sauvegarder
   const [newName, setNewName] = useState("");
 
+  // Initialisation de l'état pour stocker les informations de l'utilisateur
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
 
+  // Initialisation de l'état pour contrôler l'affichage du menu déroulant
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // Référence pour gérer l'événement de clic extérieur au dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Découpe un nom complet en prénom + nom
+  // Fonction pour découper un nom complet en prénom et nom
   const parseFullName = (fullName: string) => {
     const [first = "", ...rest] = fullName.trim().split(" ");
     return {
@@ -23,7 +28,7 @@ export const UserHomePage = () => {
     };
   };
 
-  // Récupère le profil utilisateur à l'initialisation
+  // Effet qui récupère le profil utilisateur au chargement de la page
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -42,6 +47,7 @@ export const UserHomePage = () => {
           throw new Error("Erreur lors de la récupération du profil");
         }
 
+        // Traitement de la réponse et mise à jour de l'état avec les informations récupérées
         const data = await response.json();
         const { firstName, lastName, email } = data.body;
 
@@ -57,14 +63,17 @@ export const UserHomePage = () => {
     fetchUserProfile();
   }, []);
 
+  // Gestion du changement de valeur du champ de nom
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(event.target.value);
   };
 
   const handleSaveName = async () => {
+    // On découpe le nom complet en prénom et nom
     const { firstName: newFirst, lastName: newLast } = parseFullName(newName);
 
     try {
+      // Envoi de la mise à jour du profil utilisateur vers l'API
       const response = await fetch(
         "http://localhost:3001/api/v1/user/profile",
         {
@@ -84,6 +93,7 @@ export const UserHomePage = () => {
         throw new Error("Erreur lors de la mise à jour du profil");
       }
 
+      // Mise à jour des informations utilisateur après une modification réussie
       setFirstName(newFirst);
       setLastName(newLast);
       setIsEditing(false);
@@ -93,7 +103,7 @@ export const UserHomePage = () => {
     }
   };
 
-  // Fermer le dropdown si on clique en dehors
+  // Effet pour fermer le menu déroulant si l'utilisateur clique en dehors de celui-ci
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

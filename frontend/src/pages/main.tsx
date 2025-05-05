@@ -1,14 +1,21 @@
 import "../../style.css";
 import { Link } from "react-router-dom";
-import { useSelector, useDispatch, TypedUseSelectorHook } from "react-redux"; // Importer les hooks Redux
-import { RootState } from "../redux/store"; // Importer le type de l'état global
-import { logoutUser } from "../redux/auth-actions"; // Action de déconnexion
+import { useSelector, useDispatch, TypedUseSelectorHook } from "react-redux";
+import { RootState } from "../redux/store";
+import { logoutUser } from "../redux/auth-actions";
 
 // Composant principal de la page
 const Main = () => {
+  // Définir un hook pour accéder à l'état global de manière typée
   const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+  // Vérifie si l'utilisateur est connecté en accédant à l'état Redux
   const isLoggedIn = useTypedSelector((state) => state.auth.loggedIn);
+
+  // Permet de dispatcher des actions (comme la déconnexion)
   const dispatch = useDispatch();
+
+  // Déclenche l'action pour déconnecter l'utilisateur
   const handleSignOut = () => {
     dispatch(logoutUser());
   };
@@ -16,6 +23,7 @@ const Main = () => {
   return (
     <div>
       <header className="main-nav">
+        {/* Lien vers la page d'accueil */}
         <Link className="main-nav-logo" to="/">
           <img
             className="main-nav-logo-image"
@@ -24,15 +32,20 @@ const Main = () => {
             width="200"
             height="50"
           />
+
+          {/* Texte pour l'accessibilité (lecture par les lecteurs d'écran) */}
           <h1 className="sr-only">Argent Bank</h1>
         </Link>
+
         <div>
+          {/* Si l'utilisateur est connecté, on montre l'option de déconnexion */}
           {isLoggedIn ? (
             <Link className="main-nav-item" to="/" onClick={handleSignOut}>
               <i className="fa fa-user-circle"></i>
               Sign Out
             </Link>
           ) : (
+            // Si l'utilisateur n'est pas connecté, on montre l'option de connexion
             <Link className="main-nav-item" to="/sign-in">
               <i className="fa fa-user-circle"></i>
               Sign In
@@ -45,6 +58,7 @@ const Main = () => {
         <div className="hero">
           <section className="hero-content">
             <h2 className="sr-only">Promoted Content</h2>
+
             <p className="subtitle">No fees.</p>
             <p className="subtitle">No minimum deposit.</p>
             <p className="subtitle">High interest rates.</p>
@@ -56,6 +70,7 @@ const Main = () => {
 
         <section className="features">
           <h2 className="sr-only">Features</h2>
+
           <div className="feature-item">
             <img
               src="./src/assets/icon-chat.png"
@@ -68,6 +83,7 @@ const Main = () => {
               24/7 chat or through a phone call in less than 5 minutes.
             </p>
           </div>
+
           <div className="feature-item">
             <img
               src="./src/assets/icon-money.png"
@@ -81,6 +97,7 @@ const Main = () => {
               The more you save with us, the higher your interest rate will be!
             </p>
           </div>
+
           <div className="feature-item">
             <img
               src="./src/assets/icon-security.png"

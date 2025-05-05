@@ -3,34 +3,40 @@ import { Link, useNavigate } from "react-router-dom";
 import "../../style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { login } from "../redux/auth-actions"; // Importation de l'action
-import { AppDispatch } from "../redux/store"; // Typage du dispatch
+import { login } from "../redux/auth-actions";
+import { AppDispatch } from "../redux/store";
 
 const SignInPage = () => {
+  // Définition des états locaux pour stocker l'email, le mot de passe et l'état de "remember me"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const dispatch = useDispatch<AppDispatch>(); // Typage explicite du dispatch
+
+  // Utilisation de useDispatch pour dispatcher les actions Redux
+  const dispatch = useDispatch<AppDispatch>();
+  // Utilisation de useNavigate pour gérer la navigation après une connexion réussie
   const navigate = useNavigate();
+  // Sélection de l'état d'erreur de l'authentification depuis le store Redux
   const errorMessage = useSelector(
     (state: RootState) => state.auth.errorMessage
   );
 
+  // Fonction pour gérer la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted");
 
     try {
-      // Envoie les infos de connexion
+      // Envoie les informations de connexion (email, mot de passe et "remember me") via Redux
       console.log("Dispatching login action...");
       await dispatch(login(email, password, rememberMe));
 
-      // Vérifie si le token a été stocké
+      // Vérifie si le token a été correctement stocké dans localStorage ou sessionStorage
       const token = rememberMe
-        ? localStorage.getItem("token") // Récupérer depuis localStorage si "Remember me" est coché
-        : sessionStorage.getItem("token"); // Récupérer depuis sessionStorage si "Remember me" est décoché
+        ? localStorage.getItem("token")
+        : sessionStorage.getItem("token");
 
-      console.log("Token trouvé :", token); // Affiche le token trouvé pour le débogage
+      console.log("Token trouvé :", token);
       if (token) {
         console.log("Token trouvé, navigation vers /user");
         navigate("/user");
