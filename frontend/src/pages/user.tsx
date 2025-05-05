@@ -4,22 +4,22 @@ import { useState, useEffect, useRef } from "react";
 import { logoutUser } from "../redux/auth-actions";
 
 export const UserHomePage = () => {
-  // Initialisation de l'état pour savoir si l'utilisateur est en train de modifier son nom
-  const [isEditing, setIsEditing] = useState(false);
-  // Initialisation de l'état pour le nouveau nom à sauvegarder
-  const [newName, setNewName] = useState("");
+  const [isEditing, setIsEditing] = useState(false); // Contrôle si le formulaire d'édition est visible
+  const [newName, setNewName] = useState(""); // Garde la valeur temporaire du nom complet
+  const [firstName, setFirstName] = useState(""); // Prénom actuel
+  const [lastName, setLastName] = useState(""); // Nom actuel
+  const [email, setEmail] = useState(""); // Email de l'utilisateur
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Contrôle si le menu déroulant est ouvert
+  const dropdownRef = useRef<HTMLDivElement | null>(null); // Référence pour le menu déroulant
 
-  // Initialisation de l'état pour stocker les informations de l'utilisateur
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  // Pour stocker les informations des comptes
+  const [accounts, setAccounts] = useState([
+    { type: "Checking", balance: 0 },
+    { type: "Savings", balance: 0 },
+    { type: "Credit Card", balance: 0 },
+  ]);
 
-  // Initialisation de l'état pour contrôler l'affichage du menu déroulant
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // Référence pour gérer l'événement de clic extérieur au dropdown
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Fonction pour découper un nom complet en prénom et nom
+  // Fonction pour découper le nom complet en prénom et nom
   const parseFullName = (fullName: string) => {
     const [first = "", ...rest] = fullName.trim().split(" ");
     return {
@@ -28,7 +28,7 @@ export const UserHomePage = () => {
     };
   };
 
-  // Effet qui récupère le profil utilisateur au chargement de la page
+  // Récupère le profil utilisateur à l'initialisation
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -47,14 +47,32 @@ export const UserHomePage = () => {
           throw new Error("Erreur lors de la récupération du profil");
         }
 
-        // Traitement de la réponse et mise à jour de l'état avec les informations récupérées
         const data = await response.json();
         const { firstName, lastName, email } = data.body;
 
-        setFirstName(firstName);
-        setLastName(lastName);
-        setEmail(email);
-        setNewName(`${firstName} ${lastName}`);
+        setFirstName(firstName); // Met à jour le prénom
+        setLastName(lastName); // Met à jour le nom
+        setEmail(email); // Met à jour l'email
+        setNewName(`${firstName} ${lastName}`); // Met à jour le nom complet
+
+        // Récupérer les informations des comptes
+        const accountsData = await fetch(
+          "http://localhost:3001/api/v1/user/accounts",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (!accountsData.ok) {
+          throw new Error("Erreur lors de la récupération des comptes");
+        }
+
+        const accountsJson = await accountsData.json();
+        setAccounts(accountsJson.body.accounts); // Met à jour les informations des comptes
       } catch (error) {
         console.error("Erreur lors du fetch du profil utilisateur:", error);
       }
@@ -63,17 +81,14 @@ export const UserHomePage = () => {
     fetchUserProfile();
   }, []);
 
-  // Gestion du changement de valeur du champ de nom
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewName(event.target.value);
+    setNewName(event.target.value); // Met à jour le nom complet dans l'état
   };
 
   const handleSaveName = async () => {
-    // On découpe le nom complet en prénom et nom
     const { firstName: newFirst, lastName: newLast } = parseFullName(newName);
 
     try {
-      // Envoi de la mise à jour du profil utilisateur vers l'API
       const response = await fetch(
         "http://localhost:3001/api/v1/user/profile",
         {
@@ -93,31 +108,14 @@ export const UserHomePage = () => {
         throw new Error("Erreur lors de la mise à jour du profil");
       }
 
-      // Mise à jour des informations utilisateur après une modification réussie
-      setFirstName(newFirst);
-      setLastName(newLast);
-      setIsEditing(false);
+      setFirstName(newFirst); // Met à jour l'état avec le nouveau prénom
+      setLastName(newLast); // Met à jour l'état avec le nouveau nom
+      setIsEditing(false); // Ferme le formulaire d'édition
       console.log("Nom mis à jour avec succès !");
     } catch (error) {
       console.error("Erreur lors de la sauvegarde :", error);
     }
   };
-
-  // Effet pour fermer le menu déroulant si l'utilisateur clique en dehors de celui-ci
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <div>
@@ -194,38 +192,27 @@ export const UserHomePage = () => {
 
         <h2 className="sr-only">Accounts</h2>
 
-        <section className="account">
-          <div className="account-content-wrapper">
-            <h3 className="account-title">Argent Bank Checking (x8349)</h3>
-            <p className="account-amount">$2,082.79</p>
-            <p className="account-amount-description">Available Balance</p>
-          </div>
-          <div className="account-content-wrapper cta">
-            <button className="transaction-button">View transactions</button>
-          </div>
-        </section>
-
-        <section className="account">
-          <div className="account-content-wrapper">
-            <h3 className="account-title">Argent Bank Savings (x6712)</h3>
-            <p className="account-amount">$10,928.42</p>
-            <p className="account-amount-description">Available Balance</p>
-          </div>
-          <div className="account-content-wrapper cta">
-            <button className="transaction-button">View transactions</button>
-          </div>
-        </section>
-
-        <section className="account">
-          <div className="account-content-wrapper">
-            <h3 className="account-title">Argent Bank Credit Card (x8349)</h3>
-            <p className="account-amount">$184.30</p>
-            <p className="account-amount-description">Current Balance</p>
-          </div>
-          <div className="account-content-wrapper cta">
-            <button className="transaction-button">View transactions</button>
-          </div>
-        </section>
+        {/* Affichage des informations des comptes */}
+        {accounts.map((account) => (
+          <section className="account" key={account.type}>
+            <div className="account-content-wrapper">
+              <h3 className="account-title">
+                Argent Bank {account.type} (
+                {account.type === "Checking"
+                  ? "x8349"
+                  : account.type === "Savings"
+                  ? "x6712"
+                  : "x2493"}
+                )
+              </h3>
+              <p className="account-amount">${account.balance.toFixed(2)}</p>
+              <p className="account-amount-description">Available Balance</p>
+            </div>
+            <div className="account-content-wrapper cta">
+              <button className="transaction-button">View transactions</button>
+            </div>
+          </section>
+        ))}
       </main>
 
       <footer className="footer">

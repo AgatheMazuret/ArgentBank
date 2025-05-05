@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App = () => {
   return (
+    /* Fournit l'état Redux à tous les composants enfants */
     <Provider store={store}>
       <Router>
         <div className="App">
