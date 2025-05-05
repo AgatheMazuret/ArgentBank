@@ -10,7 +10,7 @@ export const UserHomePage = () => {
   const [newName, setNewName] = useState("Tony Jarvis");
 
   // Fonction pour gérer le changement de nom
-  const handleNameChange = (event) => {
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(event.target.value);
   };
 

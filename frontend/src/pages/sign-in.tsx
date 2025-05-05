@@ -1,33 +1,28 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../style.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 import { login } from "../redux/auth-actions";
 
 const SignInPage = () => {
-  const [email, setEmail] = useState(""); // Remplacer username par email
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const dispatch = useDispatch(); // Créer l'instance de dispatch
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const errorMessage = useSelector(
+    (state: RootState) => state.auth.errorMessage
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Logique de connexion
-    console.log(
-      "Email:",
-      email,
-      "Password:",
-      password,
-      "Remember Me:",
-      rememberMe
-    );
-
-    // Dispatch de l'action login avec email, password et rememberMe
     dispatch(login(email, password, rememberMe));
 
-    // Vous pourriez ici ajouter un appel à une API pour vérifier le mot de passe
-    // et connecter l'utilisateur si la vérification réussit.
+    // Si l'authentification est réussie, nous redirigeons l'utilisateur
+    if (!errorMessage) {
+      navigate("/user");
+    }
   };
 
   return (
@@ -41,12 +36,6 @@ const SignInPage = () => {
           />
           <h1 className="sr-only">Argent Bank</h1>
         </Link>
-        <div>
-          <Link className="main-nav-item" to="/sign-in">
-            <i className="fa fa-user-circle"></i>
-            Sign In
-          </Link>
-        </div>
       </nav>
 
       <main className="main bg-dark">
@@ -81,16 +70,17 @@ const SignInPage = () => {
               />
               <label htmlFor="remember-me">Remember me</label>
             </div>
-            <Link to="/user" className="sign-in-button">
+            {errorMessage && (
+              <p className="error-message" style={{ color: "red" }}>
+                {errorMessage}
+              </p>
+            )}
+            <button type="submit" className="sign-in-button">
               Sign In
-            </Link>
+            </button>
           </form>
         </section>
       </main>
-
-      <footer className="footer">
-        <p className="footer-text">Copyright 2020 Argent Bank</p>
-      </footer>
     </div>
   );
 };

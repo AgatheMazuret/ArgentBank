@@ -2,9 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../auth-reducer";
 
 export type RootState = {
-  user: {
+  auth: {
     loggedIn: boolean;
-    name: string; // Add the 'name' property
+    name: string;
+    email: string;
+    token: string | null;
+    errorMessage: string | null;
   };
 };
 const store = configureStore({
