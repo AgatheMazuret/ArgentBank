@@ -4,6 +4,11 @@ import authReducer from "../auth-reducer";
 export type RootState = {
   auth: {
     loggedIn: boolean;
+    login: (
+      email: string,
+      password: string,
+      rememberMe: boolean
+    ) => Promise<void>;
     name: string;
     email: string;
     token: string | null;

@@ -1,6 +1,13 @@
 // src/redux/actions/auth-actions.ts
 import { loginSuccess } from "../auth-reducer";
 import { Dispatch } from "redux";
+import { createAction } from "@reduxjs/toolkit";
+
+export const loginAction = createAction<{
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}>("login");
 
 export const login =
   (email: string, password: string, rememberMe: boolean) =>

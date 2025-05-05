@@ -3,13 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import "../../style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { login } from "../redux/auth-actions";
+import { login } from "../redux/auth-actions"; // Importation de l'action
+import { AppDispatch } from "../redux/store"; // Typage du dispatch
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); // Typage explicite du dispatch
   const navigate = useNavigate();
   const errorMessage = useSelector(
     (state: RootState) => state.auth.errorMessage
