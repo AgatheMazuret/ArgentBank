@@ -13,6 +13,7 @@ export type RootState = {
     email: string;
     token: string | null;
     errorMessage: string | null;
+    isAuthenticated: boolean | null;
   };
 };
 const store = configureStore({

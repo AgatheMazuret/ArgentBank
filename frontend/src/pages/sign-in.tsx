@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../style.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,9 +13,21 @@ const SignInPage = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const errorMessage = useSelector(
     (state: RootState) => state.auth.errorMessage
   );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("Utilisateur déjà connecté, redirection vers /user");
+      navigate("/user");
+    }
+  }, [isAuthenticated, navigate]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

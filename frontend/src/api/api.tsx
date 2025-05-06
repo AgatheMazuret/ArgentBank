@@ -8,10 +8,13 @@ type Account = {
 
 export const getUserProfile = async () => {
   const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token non trouvé dans le stockage local");
+  if (!token) {
+    console.error("Token non trouvé dans localStorage");
+    throw new Error("Token non trouvé dans le stockage local");
+  }
 
   const response = await fetch("http://localhost:3001/api/v1/user/profile", {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -19,16 +22,21 @@ export const getUserProfile = async () => {
   });
 
   if (!response.ok) {
+    console.error("Erreur lors de la récupération du profil utilisateur");
     throw new Error("Erreur lors de la récupération du profil utilisateur");
   }
 
   const data = await response.json();
+  console.log("Données du profil utilisateur :", data);
   return data.body;
 };
 
 export const getUserAccounts = async (): Promise<Account[]> => {
   const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token non trouvé");
+  if (!token) {
+    console.error("Token non trouvé dans localStorage");
+    throw new Error("Token non trouvé");
+  }
 
   const response = await fetch("http://localhost:3001/api/v1/user/accounts", {
     method: "GET",
@@ -39,10 +47,12 @@ export const getUserAccounts = async (): Promise<Account[]> => {
   });
 
   if (!response.ok) {
+    console.error("Erreur lors de la récupération des comptes");
     throw new Error("Erreur lors de la récupération des comptes");
   }
 
   const data = await response.json();
+  console.log("Données des comptes utilisateur :", data);
   return data.body.accounts;
 };
 
@@ -56,10 +66,12 @@ export const loginUser = async (email: string, password: string) => {
   });
 
   if (!response.ok) {
+    console.error("Erreur lors de la connexion");
     throw new Error("Erreur lors de la connexion");
   }
 
   const data = await response.json();
+  console.log("Réponse de la connexion :", data);
   return data.token;
 };
 
@@ -69,7 +81,10 @@ export const loginUserAction =
     try {
       const data = await loginUser(email, password);
 
-      if (data.body.token) {
+      // Debug : afficher les données de connexion
+      console.log("Données de connexion reçues :", data);
+
+      if (data.body && data.body.token) {
         const token = data.body.token;
         const user = data.body.user;
 
