@@ -20,6 +20,12 @@ export const UserHomePage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [error, setError] = useState("");
+
+  const accountNumbers: { [key in Account["type"]]: string } = {
+    Checking: "1234",
+    Savings: "5678",
+    "Credit Card": "9012",
+  };
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
