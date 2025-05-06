@@ -14,7 +14,7 @@ export const login =
   (email: string, password: string, rememberMe: boolean) =>
   async (dispatch: Dispatch) => {
     try {
-      const response = await fetch("http://localhost:3001/api/v1/user/login", {
+      const response = await fetch("http://localhost:5173/api/v1/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

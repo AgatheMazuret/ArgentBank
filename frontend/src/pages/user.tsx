@@ -4,22 +4,20 @@ import { useState, useEffect, useRef } from "react";
 import { logoutUser } from "../redux/auth-actions";
 
 export const UserHomePage = () => {
-  const [isEditing, setIsEditing] = useState(false); // Contrôle si le formulaire d'édition est visible
-  const [newName, setNewName] = useState(""); // Garde la valeur temporaire du nom complet
-  const [firstName, setFirstName] = useState(""); // Prénom actuel
-  const [lastName, setLastName] = useState(""); // Nom actuel
-  const [email, setEmail] = useState(""); // Email de l'utilisateur
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Contrôle si le menu déroulant est ouvert
-  const dropdownRef = useRef<HTMLDivElement | null>(null); // Référence pour le menu déroulant
+  const [isEditing, setIsEditing] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Pour stocker les informations des comptes
   const [accounts, setAccounts] = useState([
-    { type: "Checking", balance: 0 },
-    { type: "Savings", balance: 0 },
-    { type: "Credit Card", balance: 0 },
+    { type: "Checking", balance: 2082.79 },
+    { type: "Savings", balance: 10928.42 },
+    { type: "Credit Card", balance: 184.3 },
   ]);
 
-  // Fonction pour découper le nom complet en prénom et nom
   const parseFullName = (fullName: string) => {
     const [first = "", ...rest] = fullName.trim().split(" ");
     return {
@@ -28,17 +26,25 @@ export const UserHomePage = () => {
     };
   };
 
-  // Récupère le profil utilisateur à l'initialisation
   useEffect(() => {
     const fetchUserProfile = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("Aucun token trouvé. Redirection vers la page de login.");
+        // Redirection possible :
+        // navigate("/login");
+        return;
+      }
+
       try {
         const response = await fetch(
-          "http://localhost:3001/api/v1/user/profile",
+          "http://localhost:5173/api/v1/user/profile",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -50,19 +56,18 @@ export const UserHomePage = () => {
         const data = await response.json();
         const { firstName, lastName, email } = data.body;
 
-        setFirstName(firstName); // Met à jour le prénom
-        setLastName(lastName); // Met à jour le nom
-        setEmail(email); // Met à jour l'email
-        setNewName(`${firstName} ${lastName}`); // Met à jour le nom complet
+        setFirstName(firstName);
+        setLastName(lastName);
+        setEmail(email);
+        setNewName(`${firstName} ${lastName}`);
 
-        // Récupérer les informations des comptes
         const accountsData = await fetch(
-          "http://localhost:3001/api/v1/user/accounts",
+          "http://localhost:5173/api/v1/user/accounts",
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -72,7 +77,7 @@ export const UserHomePage = () => {
         }
 
         const accountsJson = await accountsData.json();
-        setAccounts(accountsJson.body.accounts); // Met à jour les informations des comptes
+        setAccounts(accountsJson.body.accounts);
       } catch (error) {
         console.error("Erreur lors du fetch du profil utilisateur:", error);
       }
@@ -82,20 +87,26 @@ export const UserHomePage = () => {
   }, []);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewName(event.target.value); // Met à jour le nom complet dans l'état
+    setNewName(event.target.value);
   };
 
   const handleSaveName = async () => {
     const { firstName: newFirst, lastName: newLast } = parseFullName(newName);
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("Aucun token trouvé pour la mise à jour.");
+      return;
+    }
 
     try {
       const response = await fetch(
-        "http://localhost:3001/api/v1/user/profile",
+        "http://localhost:5173/api/v1/user/profile",
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             firstName: newFirst,
@@ -108,9 +119,9 @@ export const UserHomePage = () => {
         throw new Error("Erreur lors de la mise à jour du profil");
       }
 
-      setFirstName(newFirst); // Met à jour l'état avec le nouveau prénom
-      setLastName(newLast); // Met à jour l'état avec le nouveau nom
-      setIsEditing(false); // Ferme le formulaire d'édition
+      setFirstName(newFirst);
+      setLastName(newLast);
+      setIsEditing(false);
       console.log("Nom mis à jour avec succès !");
     } catch (error) {
       console.error("Erreur lors de la sauvegarde :", error);
@@ -192,7 +203,6 @@ export const UserHomePage = () => {
 
         <h2 className="sr-only">Accounts</h2>
 
-        {/* Affichage des informations des comptes */}
         {accounts.map((account) => (
           <section className="account" key={account.type}>
             <div className="account-content-wrapper">

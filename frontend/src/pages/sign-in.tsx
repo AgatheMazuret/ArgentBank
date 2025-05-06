@@ -7,34 +7,41 @@ import { login } from "../redux/auth-actions";
 import { AppDispatch } from "../redux/store";
 
 const SignInPage = () => {
-  // Définition des états locaux pour stocker l'email, le mot de passe et l'état de "remember me"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Utilisation de useDispatch pour dispatcher les actions Redux
   const dispatch = useDispatch<AppDispatch>();
-  // Utilisation de useNavigate pour gérer la navigation après une connexion réussie
   const navigate = useNavigate();
-  // Sélection de l'état d'erreur de l'authentification depuis le store Redux
   const errorMessage = useSelector(
     (state: RootState) => state.auth.errorMessage
   );
 
-  // Fonction pour gérer la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted");
 
     try {
-      // Envoie les informations de connexion (email, mot de passe et "remember me") via Redux
       console.log("Dispatching login action...");
-      await dispatch(login(email, password, rememberMe));
+      const resultAction = (await dispatch(
+        login(email, password, rememberMe)
+      )) as unknown as { payload: { token: string } };
+      const token = resultAction?.payload?.token;
 
-      // Vérifie si le token a été correctement stocké dans localStorage ou sessionStorage
-      const token = rememberMe
-        ? localStorage.getItem("token")
-        : sessionStorage.getItem("token");
+      if (token) {
+        if (rememberMe) {
+          localStorage.setItem("token", token);
+          console.log("Token stocké dans localStorage:", token);
+        } else {
+          sessionStorage.setItem("token", token);
+          console.log("Token stocké dans sessionStorage:", token);
+        }
+
+        console.log("Token trouvé :", token);
+        navigate("/user");
+      } else {
+        console.log("Aucun token trouvé.");
+      }
 
       console.log("Token trouvé :", token);
       if (token) {
