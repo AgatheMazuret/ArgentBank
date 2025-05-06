@@ -10,7 +10,7 @@ export const getUserProfile = async () => {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Token non trouvé dans le stockage local");
 
-  const response = await fetch("http://localhost:5173/api/v1/user/profile", {
+  const response = await fetch("http://localhost:3001/api/v1/user/profile", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export const getUserAccounts = async (): Promise<Account[]> => {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Token non trouvé");
 
-  const response = await fetch("http://localhost:5173/api/v1/user/accounts", {
+  const response = await fetch("http://localhost:3001/api/v1/user/accounts", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -43,11 +43,11 @@ export const getUserAccounts = async (): Promise<Account[]> => {
   }
 
   const data = await response.json();
-  return data.body.accounts; // Assuming API returns `body.accounts`
+  return data.body.accounts;
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const response = await fetch("http://localhost:5173/api/v1/user/login", {
+  const response = await fetch("http://localhost:3001/api/v1/user/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -59,7 +59,8 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Erreur lors de la connexion");
   }
 
-  return await response.json();
+  const data = await response.json();
+  return data.token;
 };
 
 export const loginUserAction =

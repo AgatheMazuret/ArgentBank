@@ -19,9 +19,11 @@
     "yamljs": "^0.3.0"
   },
   "scripts": {
-    "dev": "pnpm -F \"*\" dev",
+    "start": "node ./server/server.js",
+    "dev": "pnpm -F * dev",
     "populate-db": "node ./server/scripts/populateDatabase.js",
-    "server": "node ./server/server.js"
+    "server": "node ./server/server.js",
+    "dev:server": "nodemon ./server/server.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
