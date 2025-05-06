@@ -14,6 +14,7 @@ const SignInPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
+  // Sélecteurs pour obtenir l'état de l'authentification et les messages d'erreur
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
@@ -21,14 +22,15 @@ const SignInPage = () => {
     (state: RootState) => state.auth.errorMessage
   );
 
+  // Vérification de l'authentification à chaque rendu de la page
   useEffect(() => {
     if (isAuthenticated) {
       console.log("Utilisateur déjà connecté, redirection vers /user");
       navigate("/user");
     }
   }, [isAuthenticated, navigate]);
-  };
 
+  // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted");
@@ -38,7 +40,7 @@ const SignInPage = () => {
       const resultAction = (await dispatch(
         login(email, password, rememberMe)
       )) as unknown as { payload: { token: string } };
-      const token = resultAction?.payload?.token;
+      const token = resultAction.payload.token;
 
       if (token) {
         if (rememberMe) {
@@ -50,14 +52,6 @@ const SignInPage = () => {
         }
 
         console.log("Token trouvé :", token);
-        navigate("/user");
-      } else {
-        console.log("Aucun token trouvé.");
-      }
-
-      console.log("Token trouvé :", token);
-      if (token) {
-        console.log("Token trouvé, navigation vers /user");
         navigate("/user");
       } else {
         console.log("Aucun token trouvé.");

@@ -72,17 +72,19 @@ export const loginUser = async (email: string, password: string) => {
 
   const data = await response.json();
   console.log("Réponse de la connexion :", data);
-  return data.token;
+  return data;
 };
 
 export const loginUserAction =
-  (email: string, password: string, rememberMe: boolean) =>
+  (
+    email: string,
+    password: string,
+    rememberMe: boolean,
+    navigate: (path: string) => void
+  ) =>
   async (dispatch: Dispatch) => {
     try {
       const data = await loginUser(email, password);
-
-      // Debug : afficher les données de connexion
-      console.log("Données de connexion reçues :", data);
 
       if (data.body && data.body.token) {
         const token = data.body.token;
@@ -95,6 +97,8 @@ export const loginUserAction =
         }
 
         dispatch(loginSuccess({ token, user }));
+
+        navigate("/user");
       } else {
         console.error("Erreur de connexion :", data.message);
       }

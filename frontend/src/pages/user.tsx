@@ -11,12 +11,6 @@ type Account = {
   balance: number;
 };
 
-const accountNumbers: Record<Account["type"], string> = {
-  Checking: "x8349",
-  Savings: "x6712",
-  "Credit Card": "x2493",
-};
-
 export const UserHomePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState("");
