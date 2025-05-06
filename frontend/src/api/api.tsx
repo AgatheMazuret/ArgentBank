@@ -7,7 +7,8 @@ type Account = {
 };
 
 export const getUserProfile = async () => {
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
   if (!token) {
     console.error("Token non trouvé dans localStorage");
     throw new Error("Token non trouvé dans le stockage local");

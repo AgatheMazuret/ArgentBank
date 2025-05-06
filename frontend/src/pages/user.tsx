@@ -39,10 +39,11 @@ export const UserHomePage = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
       if (!token) {
         console.error("Aucun token trouvé. Redirection vers la page de login.");
-        navigate("/login");
+        navigate("/sign-in");
         return;
       }
 
