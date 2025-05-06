@@ -1,0 +1,88 @@
+import { loginSuccess } from "../auth-reducer";
+import { Dispatch } from "redux";
+
+type Account = {
+  type: string;
+  balance: number;
+};
+
+export const getUserProfile = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token non trouvé dans le stockage local");
+
+  const response = await fetch("http://localhost:5173/api/v1/user/profile", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur lors de la récupération du profil utilisateur");
+  }
+
+  const data = await response.json();
+  return data.body;
+};
+
+export const getUserAccounts = async (): Promise<Account[]> => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token non trouvé");
+
+  const response = await fetch("http://localhost:5173/api/v1/user/accounts", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur lors de la récupération des comptes");
+  }
+
+  const data = await response.json();
+  return data.body.accounts; // Assuming API returns `body.accounts`
+};
+
+export const loginUser = async (email: string, password: string) => {
+  const response = await fetch("http://localhost:5173/api/v1/user/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur lors de la connexion");
+  }
+
+  return await response.json();
+};
+
+export const loginUserAction =
+  (email: string, password: string, rememberMe: boolean) =>
+  async (dispatch: Dispatch) => {
+    try {
+      const data = await loginUser(email, password);
+
+      if (data.body.token) {
+        const token = data.body.token;
+        const user = data.body.user;
+
+        if (rememberMe) {
+          localStorage.setItem("token", token);
+        } else {
+          sessionStorage.setItem("token", token);
+        }
+
+        dispatch(loginSuccess({ token, user }));
+      } else {
+        console.error("Erreur de connexion :", data.message);
+      }
+    } catch (error) {
+      console.error("Erreur réseau", error);
+    }
+  };

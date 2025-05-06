@@ -1,7 +1,21 @@
 import "../index.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { logoutUser } from "../redux/auth-actions";
+import { getUserProfile } from "../api/api";
+import { getUserAccounts } from "../api/api";
+import updateUserProfile from "../pages/user";
+import logoutUser from "../pages/user";
+
+type Account = {
+  type: "Checking" | "Savings" | "Credit Card";
+  balance: number;
+};
+
+const accountNumbers: Record<Account["type"], string> = {
+  Checking: "x8349",
+  Savings: "x6712",
+  "Credit Card": "x2493",
+};
 
 export const UserHomePage = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -10,13 +24,10 @@ export const UserHomePage = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [error, setError] = useState("");
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const [accounts, setAccounts] = useState([
-    { type: "Checking", balance: 2082.79 },
-    { type: "Savings", balance: 10928.42 },
-    { type: "Credit Card", balance: 184.3 },
-  ]);
+  const navigate = useNavigate();
 
   const parseFullName = (fullName: string) => {
     const [first = "", ...rest] = fullName.trim().split(" ");
@@ -27,63 +38,51 @@ export const UserHomePage = () => {
   };
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUserData = async () => {
       const token = localStorage.getItem("token");
-
       if (!token) {
         console.error("Aucun token trouvé. Redirection vers la page de login.");
-        // Redirection possible :
-        // navigate("/login");
+        navigate("/login");
         return;
       }
 
       try {
-        const response = await fetch(
-          "http://localhost:5173/api/v1/user/profile",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération du profil");
-        }
-
-        const data = await response.json();
-        const { firstName, lastName, email } = data.body;
+        const profile = await getUserProfile();
+        const { firstName, lastName, email } = profile;
 
         setFirstName(firstName);
         setLastName(lastName);
         setEmail(email);
         setNewName(`${firstName} ${lastName}`);
 
-        const accountsData = await fetch(
-          "http://localhost:5173/api/v1/user/accounts",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const accounts = await getUserAccounts();
+        const mappedAccounts = accounts.map(
+          (account: { type: string; balance: number }) => ({
+            type: account.type as "Checking" | "Savings" | "Credit Card",
+            balance: account.balance,
+          })
         );
-
-        if (!accountsData.ok) {
-          throw new Error("Erreur lors de la récupération des comptes");
-        }
-
-        const accountsJson = await accountsData.json();
-        setAccounts(accountsJson.body.accounts);
-      } catch (error) {
-        console.error("Erreur lors du fetch du profil utilisateur:", error);
+        setAccounts(mappedAccounts);
+      } catch (err) {
+        console.error("Erreur lors du fetch :", err);
+        setError("Erreur lors du chargement des données. Veuillez réessayer.");
       }
     };
 
-    fetchUserProfile();
+    fetchUserData();
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,38 +92,19 @@ export const UserHomePage = () => {
   const handleSaveName = async () => {
     const { firstName: newFirst, lastName: newLast } = parseFullName(newName);
     const token = localStorage.getItem("token");
-
     if (!token) {
       console.error("Aucun token trouvé pour la mise à jour.");
       return;
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:5173/api/v1/user/profile",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            firstName: newFirst,
-            lastName: newLast,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la mise à jour du profil");
-      }
-
+      await updateUserProfile();
       setFirstName(newFirst);
       setLastName(newLast);
       setIsEditing(false);
-      console.log("Nom mis à jour avec succès !");
     } catch (error) {
       console.error("Erreur lors de la sauvegarde :", error);
+      setError("Impossible de mettre à jour le nom.");
     }
   };
 
@@ -199,6 +179,7 @@ export const UserHomePage = () => {
               Edit Name
             </button>
           )}
+          {error && <p className="error-message">{error}</p>}
         </div>
 
         <h2 className="sr-only">Accounts</h2>
@@ -207,13 +188,7 @@ export const UserHomePage = () => {
           <section className="account" key={account.type}>
             <div className="account-content-wrapper">
               <h3 className="account-title">
-                Argent Bank {account.type} (
-                {account.type === "Checking"
-                  ? "x8349"
-                  : account.type === "Savings"
-                  ? "x6712"
-                  : "x2493"}
-                )
+                Argent Bank {account.type} ({accountNumbers[account.type]})
               </h3>
               <p className="account-amount">${account.balance.toFixed(2)}</p>
               <p className="account-amount-description">Available Balance</p>
