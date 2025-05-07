@@ -1,23 +1,21 @@
 import "../../style.css";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch, TypedUseSelectorHook } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
-import { logoutUser } from "../redux/auth-actions";
-
+import { logoutUser } from "../redux/auth-reducer";
 // Composant principal de la page
 const Main = () => {
-  // Définir un hook pour accéder à l'état global de manière typée
-  const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
-
   // Vérifie si l'utilisateur est connecté en accédant à l'état Redux
-  const isLoggedIn = useTypedSelector((state) => state.auth.loggedIn);
+  const isLoggedIn = useSelector((state: RootState) => state.auth.token);
 
   // Permet de dispatcher des actions (comme la déconnexion)
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Déclenche l'action pour déconnecter l'utilisateur
   const handleSignOut = () => {
     dispatch(logoutUser());
+    navigate("/"); // Redirige vers la page d'accueil
   };
 
   return (

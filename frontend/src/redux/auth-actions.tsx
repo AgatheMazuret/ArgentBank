@@ -1,5 +1,5 @@
 import { loginUser } from "../api/api";
-import { loginSuccess } from "../auth-reducer";
+import { loginSuccess, logoutUser as logoutUserAction } from "./auth-reducer";
 import { Dispatch } from "redux";
 
 export const login =
@@ -27,8 +27,55 @@ export const login =
     }
   };
 
-export const logoutUser = () => {
-  return {
-    type: "LOGOUT_USER",
+export const updateUserProfile = async ({
+  firstName,
+  lastName,
+}: {
+  firstName: string;
+  lastName: string;
+}) => {
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+
+  if (!token) throw new Error("Aucun token trouvé");
+
+  const response = await fetch("http://localhost:3001/api/v1/user/profile", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ firstName, lastName }),
+  });
+
+  if (!response.ok) {
+    console.error("Erreur lors de la mise à jour du profil");
+    throw new Error("Erreur lors de la mise à jour du profil");
+  }
+
+  const data = await response.json();
+  console.log("Réponse de la mise à jour du profil :", data);
+  return data.body;
+};
+
+// Action Redux pour mettre à jour le profil utilisateur
+export const updateUserProfileAction =
+  (firstName: string, lastName: string) => async (dispatch: Dispatch) => {
+    try {
+      const data = await updateUserProfile({ firstName, lastName });
+
+      // Dispatcher l'action pour mettre à jour le profil dans le store
+      dispatch({
+        type: "UPDATE_PROFILE_SUCCESS",
+        payload: data, // Mettre à jour avec les nouvelles données
+      });
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du profil", error);
+    }
   };
+
+export const logout = () => (dispatch: Dispatch) => {
+  localStorage.removeItem("token");
+  sessionStorage.removeItem("token");
+  dispatch(logoutUserAction());
 };

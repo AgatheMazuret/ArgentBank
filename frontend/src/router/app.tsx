@@ -2,7 +2,7 @@ import "../index.css";
 import store from "../redux/store";
 import Main from "../pages/main";
 import SignInPage from "../pages/sign-in";
-import { UserHomePage } from "../pages/user";
+import UserHomePage from "../pages/user"; // Correction de l'import pour correspondre à une exportation par défaut
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 

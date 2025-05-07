@@ -1,6 +1,3 @@
-import { loginSuccess } from "../auth-reducer";
-import { Dispatch } from "redux";
-
 type Account = {
   type: string;
   balance: number;
@@ -83,21 +80,18 @@ export const loginUserAction =
     rememberMe: boolean,
     navigate: (path: string) => void
   ) =>
-  async (dispatch: Dispatch) => {
+  async () => {
     try {
       const data = await loginUser(email, password);
 
       if (data.body && data.body.token) {
         const token = data.body.token;
-        const user = data.body.user;
 
         if (rememberMe) {
           localStorage.setItem("token", token);
         } else {
           sessionStorage.setItem("token", token);
         }
-
-        dispatch(loginSuccess({ token, user }));
 
         navigate("/user");
       } else {

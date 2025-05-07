@@ -15,9 +15,7 @@ const SignInPage = () => {
   const navigate = useNavigate();
 
   // Sélecteurs pour obtenir l'état de l'authentification et les messages d'erreur
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+  const isAuthenticated = useSelector((state: RootState) => state.auth.token);
   const errorMessage = useSelector(
     (state: RootState) => state.auth.errorMessage
   );
@@ -33,32 +31,8 @@ const SignInPage = () => {
   // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted");
 
-    try {
-      console.log("Dispatching login action...");
-      const resultAction = (await dispatch(
-        login(email, password, rememberMe)
-      )) as unknown as { payload: { token: string } };
-      const token = resultAction.payload.token;
-
-      if (token) {
-        if (rememberMe) {
-          localStorage.setItem("token", token);
-          console.log("Token stocké dans localStorage:", token);
-        } else {
-          sessionStorage.setItem("token", token);
-          console.log("Token stocké dans sessionStorage:", token);
-        }
-
-        console.log("Token trouvé :", token);
-        navigate("/user");
-      } else {
-        console.log("Aucun token trouvé.");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    dispatch(login(email, password, rememberMe));
   };
 
   return (

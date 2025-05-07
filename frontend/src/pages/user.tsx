@@ -1,77 +1,31 @@
 import "../index.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { getUserProfile } from "../api/api";
-import { getUserAccounts } from "../api/api";
-import updateUserProfile from "../pages/user";
-import logoutUser from "../pages/user";
-
-type Account = {
-  type: "Checking" | "Savings" | "Credit Card";
-  balance: number;
-};
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../redux/store";
+import { logoutUser, fetchUserProfile } from "../redux/auth-reducer";
+import { updateUserProfileAction } from "../redux/auth-actions";
 
 export const UserHomePage = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [error, setError] = useState("");
-
-  const accountNumbers: { [key in Account["type"]]: string } = {
-    Checking: "1234",
-    Savings: "5678",
-    "Credit Card": "9012",
-  };
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const parseFullName = (fullName: string) => {
-    const [first = "", ...rest] = fullName.trim().split(" ");
-    return {
-      firstName: first,
-      lastName: rest.join(" ") || "",
-    };
-  };
+  const { user, token } = useSelector((state: RootState) => state.auth);
+  const { firstName, lastName, email } = user || {};
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoggedOut, setIsLoggedOut] = useState(false); // Ajout d'un état pour suivre la déconnexion
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
-      if (!token) {
-        console.error("Aucun token trouvé. Redirection vers la page de login.");
-        navigate("/sign-in");
-        return;
-      }
-
-      try {
-        const profile = await getUserProfile();
-        const { firstName, lastName, email } = profile;
-
-        setFirstName(firstName);
-        setLastName(lastName);
-        setEmail(email);
-        setNewName(`${firstName} ${lastName}`);
-
-        const accounts = await getUserAccounts();
-        const mappedAccounts = accounts.map(
-          (account: { type: string; balance: number }) => ({
-            type: account.type as "Checking" | "Savings" | "Credit Card",
-            balance: account.balance,
-          })
-        );
-        setAccounts(mappedAccounts);
-      } catch (err) {
-        console.error("Erreur lors du fetch :", err);
-        setError("Erreur lors du chargement des données. Veuillez réessayer.");
-      }
-    };
-
-    fetchUserData();
-  }, [navigate]);
+    if (!token && !isLoggedOut) {
+      console.error("Aucun token trouvé. Redirection vers la page de login.");
+      navigate("/sign-in");
+      return;
+    }
+  }, [navigate, token, isLoggedOut]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -86,28 +40,36 @@ export const UserHomePage = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewName(event.target.value);
+  // Récupération automatique des données utilisateur mises à jour
+  useEffect(() => {
+    dispatch(fetchUserProfile());
+  }, [dispatch]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    const firstName = data.firstName as string;
+    const lastName = data.lastName as string;
+
+    await dispatch(updateUserProfileAction(firstName, lastName));
+
+    // Mettre à jour immédiatement l'état local pour refléter les changements
+    dispatch({
+      type: "auth/fetchUserProfile/fulfilled",
+      payload: { ...user, firstName, lastName },
+    });
+
+    setIsEditing(false);
   };
 
-  const handleSaveName = async () => {
-    const { firstName: newFirst, lastName: newLast } = parseFullName(newName);
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Aucun token trouvé pour la mise à jour.");
-      return;
-    }
-
-    try {
-      await updateUserProfile();
-      setFirstName(newFirst);
-      setLastName(newLast);
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde :", error);
-      setError("Impossible de mettre à jour le nom.");
-    }
-  };
+  const handleSignOut = () => {
+    dispatch(logoutUser());
+    setIsLoggedOut(true); // Marque l'utilisateur comme déconnecté
+    navigate("/"); // Redirige vers la page d'accueil
+  }; // Ajout de l'accolade manquante
 
   return (
     <div>
@@ -142,7 +104,7 @@ export const UserHomePage = () => {
               </div>
             )}
           </div>
-          <Link to="/" className="sign-out-button" onClick={logoutUser}>
+          <Link to="/" className="sign-out-button" onClick={handleSignOut}>
             <i className="fa fa-sign-out"></i>
             Sign out
           </Link>
@@ -158,14 +120,10 @@ export const UserHomePage = () => {
           </h1>
 
           {isEditing ? (
-            <div className="edit-name-form">
-              <input
-                type="text"
-                value={newName}
-                onChange={handleNameChange}
-                placeholder="Enter new name"
-              />
-              <button className="save-name-button" onClick={handleSaveName}>
+            <form onSubmit={handleSubmit}>
+              <input name="firstName" type="text" placeholder="John" />
+              <input name="lastName" type="text" placeholder="Doe" />
+              <button className="save-name-button" type="submit">
                 Save
               </button>
               <button
@@ -174,31 +132,53 @@ export const UserHomePage = () => {
               >
                 Cancel
               </button>
-            </div>
+            </form>
           ) : (
-            <button className="edit-button" onClick={() => setIsEditing(true)}>
+            <button
+              className="edit-button"
+              onClick={() => {
+                setIsEditing(true);
+              }}
+            >
               Edit Name
             </button>
           )}
-          {error && <p className="error-message">{error}</p>}
         </div>
 
         <h2 className="sr-only">Accounts</h2>
 
-        {accounts.map((account) => (
-          <section className="account" key={account.type}>
-            <div className="account-content-wrapper">
-              <h3 className="account-title">
-                Argent Bank {account.type} ({accountNumbers[account.type]})
-              </h3>
-              <p className="account-amount">${account.balance.toFixed(2)}</p>
-              <p className="account-amount-description">Available Balance</p>
-            </div>
-            <div className="account-content-wrapper cta">
-              <button className="transaction-button">View transactions</button>
-            </div>
-          </section>
-        ))}
+        <section className="account">
+          <div className="account-content-wrapper">
+            <h3 className="account-title">Argent Bank Checking (x8349)</h3>
+            <p className="account-amount">$2,082.79</p>
+            <p className="account-amount-description">Available Balance</p>
+          </div>
+          <div className="account-content-wrapper cta">
+            <button className="transaction-button">View transactions</button>
+          </div>
+        </section>
+
+        <section className="account">
+          <div className="account-content-wrapper">
+            <h3 className="account-title">Argent Bank Savings (x6712)</h3>
+            <p className="account-amount">$10,928.42</p>
+            <p className="account-amount-description">Available Balance</p>
+          </div>
+          <div className="account-content-wrapper cta">
+            <button className="transaction-button">View transactions</button>
+          </div>
+        </section>
+
+        <section className="account">
+          <div className="account-content-wrapper">
+            <h3 className="account-title">Argent Bank Credit Card (x8349)</h3>
+            <p className="account-amount">$184.30</p>
+            <p className="account-amount-description">Current Balance</p>
+          </div>
+          <div className="account-content-wrapper cta">
+            <button className="transaction-button">View transactions</button>
+          </div>
+        </section>
       </main>
 
       <footer className="footer">
