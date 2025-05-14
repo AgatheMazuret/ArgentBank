@@ -1,6 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer, { AuthState } from "./auth-reducer";
 
+// Le store Redux centralise l'état global de l'application, facilitant la gestion et le partage des données entre les composants.
+// La configuration du store inclut le reducer d'authentification pour gérer l'état lié à l'utilisateur.
+// Un listener est ajouté pour surveiller les mises à jour du store et effectuer des actions spécifiques, comme le suivi des modifications du profil utilisateur.
+
 export type RootState = {
   auth: AuthState;
 };

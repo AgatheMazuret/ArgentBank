@@ -1,3 +1,6 @@
+// Ce fichier définit le slice Redux pour gérer l'état d'authentification de l'application.
+// Il centralise les données utilisateur, le token et les erreurs, facilitant leur gestion et leur accès dans toute l'application.
+
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { getUserProfile } from "../api/api";
 

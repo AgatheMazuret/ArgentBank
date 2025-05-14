@@ -1,3 +1,6 @@
+// Ce fichier contient des actions asynchrones pour gérer l'authentification et les mises à jour du profil utilisateur.
+// Les actions permettent de centraliser la logique métier liée à l'authentification, comme la gestion des tokens et les appels API.
+
 import { loginUser } from "../api/api";
 import { loginSuccess, logoutUser as logoutUserAction } from "./auth-reducer";
 import { Dispatch } from "redux";

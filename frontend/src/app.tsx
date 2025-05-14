@@ -6,6 +6,10 @@ import { UserHomePage } from "./pages/user";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+// Ce fichier définit le composant racine de l'application.
+// Il configure le store Redux pour la gestion de l'état global.
+// Le routeur est utilisé pour gérer la navigation entre les différentes pages de l'application.
+
 const App = () => {
   return (
     <Provider store={store}>

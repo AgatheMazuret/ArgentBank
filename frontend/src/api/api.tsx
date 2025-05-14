@@ -3,6 +3,10 @@ type Account = {
   balance: number;
 };
 
+// Fonction pour récupérer le profil utilisateur
+// Elle utilise un token stocké dans localStorage ou sessionStorage pour s'authentifier
+// Effectue une requête POST à l'API pour obtenir les données du profil
+// En cas d'erreur, elle affiche un message d'erreur et lève une exception
 export const getUserProfile = async () => {
   const token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -29,6 +33,10 @@ export const getUserProfile = async () => {
   return data.body;
 };
 
+// Fonction pour récupérer les comptes utilisateur
+// Elle utilise un token stocké dans localStorage pour s'authentifier
+// Effectue une requête GET à l'API pour obtenir les comptes
+// En cas d'erreur, elle affiche un message d'erreur et lève une exception
 export const getUserAccounts = async (): Promise<Account[]> => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -54,6 +62,10 @@ export const getUserAccounts = async (): Promise<Account[]> => {
   return data.body.accounts;
 };
 
+// Fonction pour connecter un utilisateur
+// Elle envoie les informations d'identification (email et mot de passe) à l'API
+// Effectue une requête POST pour obtenir un token d'authentification
+// En cas d'erreur, elle affiche un message d'erreur et lève une exception
 export const loginUser = async (email: string, password: string) => {
   const response = await fetch("http://localhost:3001/api/v1/user/login", {
     method: "POST",
@@ -73,6 +85,11 @@ export const loginUser = async (email: string, password: string) => {
   return data;
 };
 
+// Fonction d'action pour gérer la connexion utilisateur
+// Elle utilise la fonction loginUser pour effectuer la connexion
+// Stocke le token dans localStorage ou sessionStorage selon l'option "rememberMe"
+// Redirige l'utilisateur vers la page utilisateur après une connexion réussie
+// En cas d'erreur, elle affiche un message d'erreur réseau
 export const loginUserAction =
   (
     email: string,

@@ -3,6 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { logoutUser } from "../redux/auth-reducer";
+
+// Documentation ajoutée pour clarifier les responsabilités et les comportements du composant Main.
+// Ce composant représente la page d'accueil de l'application.
+// Il affiche des informations promotionnelles et adapte son contenu en fonction de l'état de connexion de l'utilisateur.
+// Les utilisateurs connectés peuvent se déconnecter via un bouton, tandis que les utilisateurs non connectés voient un bouton de connexion.
+
+// Cette page sert de page d'accueil pour présenter les fonctionnalités principales de l'application.
+// Elle adapte son affichage en fonction de l'état de connexion de l'utilisateur, offrant des options de connexion ou de déconnexion.
+
 // Composant principal de la page
 const Main = () => {
   // Vérifie si l'utilisateur est connecté en accédant à l'état Redux
