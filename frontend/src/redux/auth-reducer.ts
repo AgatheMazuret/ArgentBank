@@ -24,7 +24,7 @@ const initialState: AuthState = {
   errorMessage: null,
 };
 
-// Thunk pour récupérer le profil utilisateur
+// Thunk pour récupérer le profil utilisateur (effectue une rêquete API en arrière-plan)
 export const fetchUserProfile = createAsyncThunk(
   "auth/fetchUserProfile",
   async (_, { rejectWithValue }) => {

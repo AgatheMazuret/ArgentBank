@@ -11,10 +11,6 @@ import { AppDispatch } from "../redux/store";
 // Il capture les entrées utilisateur pour l'email et le mot de passe, et gère l'option "Se souvenir de moi".
 // Les utilisateurs connectés sont redirigés automatiquement vers leur page de profil.
 
-// Cette page gère l'authentification des utilisateurs en leur permettant de se connecter.
-// Les états locaux sont utilisés pour capturer les entrées utilisateur et gérer l'option "Se souvenir de moi".
-// Les effets permettent de rediriger les utilisateurs déjà connectés vers leur page de profil.
-
 const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -22,6 +22,7 @@ store.subscribe(() => {
   }
 });
 
+// Typage du Dispatch
 export type AppDispatch = typeof store.dispatch;
 
 export default store;

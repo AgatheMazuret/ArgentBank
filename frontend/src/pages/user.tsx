@@ -11,10 +11,6 @@ import { updateUserProfileAction } from "../redux/auth-actions";
 // Il gère également la déconnexion et la récupération automatique des données utilisateur mises à jour.
 // Les états locaux contrôlent l'édition des informations et l'affichage des menus déroulants.
 
-// Cette page permet à l'utilisateur de visualiser et de modifier ses informations personnelles.
-// Les effets sont utilisés pour gérer les interactions avec le DOM et les données utilisateur, comme la récupération automatique du profil.
-// La gestion des états locaux permet de contrôler l'édition des informations et la déconnexion.
-
 export const UserHomePage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -76,9 +72,9 @@ export const UserHomePage = () => {
 
   const handleSignOut = () => {
     dispatch(logoutUser());
-    setIsLoggedOut(true); // Marque l'utilisateur comme déconnecté
-    navigate("/"); // Redirige vers la page d'accueil
-  }; // Ajout de l'accolade manquante
+    setIsLoggedOut(true);
+    navigate("/");
+  };
 
   return (
     <div>

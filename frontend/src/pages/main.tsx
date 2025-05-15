@@ -12,7 +12,6 @@ import { logoutUser } from "../redux/auth-reducer";
 // Cette page sert de page d'accueil pour présenter les fonctionnalités principales de l'application.
 // Elle adapte son affichage en fonction de l'état de connexion de l'utilisateur, offrant des options de connexion ou de déconnexion.
 
-// Composant principal de la page
 const Main = () => {
   // Vérifie si l'utilisateur est connecté en accédant à l'état Redux
   const isLoggedIn = useSelector((state: RootState) => state.auth.token);
@@ -21,16 +20,14 @@ const Main = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Déclenche l'action pour déconnecter l'utilisateur
   const handleSignOut = () => {
     dispatch(logoutUser());
-    navigate("/"); // Redirige vers la page d'accueil
+    navigate("/");
   };
 
   return (
     <div>
       <header className="main-nav">
-        {/* Lien vers la page d'accueil */}
         <Link className="main-nav-logo" to="/">
           <img
             className="main-nav-logo-image"
@@ -40,7 +37,6 @@ const Main = () => {
             height="50"
           />
 
-          {/* Texte pour l'accessibilité (lecture par les lecteurs d'écran) */}
           <h1 className="sr-only">Argent Bank</h1>
         </Link>
 
